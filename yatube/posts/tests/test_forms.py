@@ -40,8 +40,8 @@ class TestCreateForm(TestCase):
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
 
-    def test_authorised_new_post(self): 
-        """Проверка создания нового поста, авторизированным пользователем""" 
+    def test_authorised_new_post(self):
+        """Проверка создания нового поста, авторизированным пользователем"""
         post_count = Post.objects.count()
         small_gif = (
             b'\x47\x49\x46\x38\x39\x61\x02\x00'
@@ -55,25 +55,25 @@ class TestCreateForm(TestCase):
             name='small.gif',
             content=small_gif,
             content_type='image/gif')
-        form_data = { 
-            'group': self.group.id, 
+        form_data = {
+            'group': self.group.id,
             'text': 'Пост от авторизованного пользователя',
-            'image': uploaded 
+            'image': uploaded
         }
-        response = self.authorized_client.post( 
-            reverse('posts:create_post'), 
-            data=form_data, 
-            follow=True) 
-        new_post = Post.objects.first() 
-        self.assertEqual(new_post.group, self.group) 
-        self.assertEqual(new_post.author, self.user) 
-        self.assertRedirects( 
-            response, 
-            reverse('posts:profile', args=['TestForTest'])) 
-        self.assertEqual(Post.objects.count(), post_count + 1) 
-        self.assertTrue(Post.objects.filter( 
-            text='Пост от авторизованного пользователя', 
-            group=TestCreateForm.group).exists()) 
+        response = self.authorized_client.post(
+            reverse('posts:create_post'),
+            data=form_data,
+            follow=True)
+        new_post = Post.objects.first()
+        self.assertEqual(new_post.group, self.group)
+        self.assertEqual(new_post.author, self.user)
+        self.assertRedirects(
+            response,
+            reverse('posts:profile', args=['TestForTest']))
+        self.assertEqual(Post.objects.count(), post_count + 1)
+        self.assertTrue(Post.objects.filter(
+            text='Пост от авторизованного пользователя',
+            group=TestCreateForm.group).exists())
 
     def test_guest_new_post(self):
         """Неавторизоанный не может создавать посты"""

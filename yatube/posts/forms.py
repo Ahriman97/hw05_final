@@ -24,6 +24,7 @@ class CommentForm(forms.ModelForm):
         model = Comment
         fields = ('text',)
 
+
 class FollowForm(forms.ModelForm):
     class Meta:
         model = Follow

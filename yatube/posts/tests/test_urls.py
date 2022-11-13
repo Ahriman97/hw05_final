@@ -41,7 +41,7 @@ class TaskURLTests(TestCase):
             '/posts/1/': 'posts/post_detail.html',
         }
         for address, template in templates_url_names.items():
-            with self.subTest(template=template):    
+            with self.subTest(template=template):
                 response = self.authorized_client.get(address)
                 self.assertTemplateUsed(response, template)
 
