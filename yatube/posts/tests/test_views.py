@@ -1,11 +1,12 @@
-from django.contrib.auth import get_user_model
+from django import forms
 from django.test import Client, TestCase
 from django.urls import reverse
-# from posts.models import Post, Group, Comment, Follow
-from posts.models import Post, Group, Follow
-from django import forms
+
+from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.cache import cache
+
+from posts.models import Post, Group, Follow, Comment
 
 User = get_user_model()
 
@@ -167,30 +168,25 @@ class PostPagesTests(TestCase):
         after_clearing_the_cache = response.content
         self.assertNotEqual(before_clearing_the_cache,
                             after_clearing_the_cache)
-#        Эти тесты не работают. Не в состоянии понять, что в тесте не так
-#        сделано. Так то оно работает
-#    def test_add_comment_login_user(self):
-#        """
-#        Проверка доступа зарегистрированного пользователя
-#        к добавлению комментария
-#        """
-#        comment_count = Comment.objects.count()
-#        some_words = 'Полностью разделяю позицию автора. Отличная работа!'
-#        form_data = {
-#            'text': some_words,
-#        }
-#        response = self.authorized_client.post(
-#            reverse(
-#                'posts:add_comment', kwargs={'post_id': self.post.id}),
-#            data=form_data,
-#            follow=True
-#        )
-#        self.assertEqual(response.status_code, 302)
-#        self.assertRedirects(response, reverse(
-#            'posts:post_detail', kwargs={'post_id': self.post.id}))
-#        self.assertEqual(Comment.objects.count(), comment_count+1)
-#        self.assertTrue(Comment.objects.filter(
-#            text=self.post.text, author= self.post.author).exists())
+
+    def test_create_comment_by_authorized_client(self):
+        cache.clear()
+        """Валидная форма авторизованного создает коммент"""
+        comment_count = Comment.objects.count()
+        form_data = {
+            'text': 'Тестовый комментарий',
+        }
+        response = self.authorized_client.post(
+            reverse('posts:add_comment',
+                    kwargs={'post_id': self.post.id}),
+            data=form_data,
+            follow=True
+        )
+        self.assertRedirects(
+            response,
+            reverse('posts:post_detail', kwargs={'post_id': self.post.id})
+        )
+        self.assertEqual(Comment.objects.count(), comment_count + 1)
 
 
 class PaginatorViewsTest(TestCase):
@@ -263,40 +259,45 @@ class FollowTests(TestCase):
         self.user_following = User.objects.create_user(username='following',
                                                        email='test22@mail.ru',
                                                        password='test_pass')
+        self.client_auth_follower.force_login(self.user_follower)
+        self.client_auth_following.force_login(self.user_following)
         self.post = Post.objects.create(
-            author=self.user_following,
+            author=self.user_follower,
             text='Тестовая запись для тестирования ленты'
         )
+        # self.follow = Follow.objects.create(
+        #    user=self.user_follower, author=self.user_following)
+        self.client_auth_follower.get(reverse('posts:profile_follow',
+                                              kwargs={'username':
+                                                      self.user_following.
+                                                      username}))
         self.client_auth_follower.force_login(self.user_follower)
         self.client_auth_following.force_login(self.user_following)
 
     def test_follow(self):
         """подписка на автора"""
-        self.client_auth_follower.get(reverse('posts:profile_follow',
-                                              kwargs={'username':
-                                                      self.user_following.
-                                                      username}))
+        self.assertEqual(Follow.objects.filter(
+            user=self.user_follower, author=self.user_following).count(), 1)
         self.assertEqual(Follow.objects.all().count(), 1)
 
     def test_unfollow(self):
         """отписка от автора"""
-        self.client_auth_follower.get(reverse('posts:profile_follow',
-                                              kwargs={'username':
-                                                      self.user_following.
-                                                      username}))
         self.client_auth_follower.get(reverse('posts:profile_unfollow',
                                       kwargs={'username':
                                               self.user_following.username}))
         self.assertEqual(Follow.objects.all().count(), 0)
+        self.assertEqual(Follow.objects.filter(
+            user=self.user_follower, author=self.user_following).count(), 0)
 
     def test_subscription_feed(self):
         """запись появляется в ленте подписчиков"""
-        Follow.objects.create(user=self.user_follower,
-                              author=self.user_following)
-        response = self.client_auth_follower.get('/follow/')
-        post_text_0 = response.context['page_obj'][0].text
-        self.assertEqual(post_text_0, 'Тестовая запись для тестирования ленты')
-        # в качестве неподписанного пользователя проверяем собственную ленту
-        response = self.client_auth_following.get('/follow/')
-        self.assertNotContains(response,
-                               'Тестовая запись для тестирования ленты')
+        post = Post.objects.create(
+            author=self.user_follower,
+            text="Подпишись на меня")
+        Follow.objects.create(
+            user=self.user_following,
+            author=self.user_follower)
+        response = self.client_auth_following.get(
+            reverse('posts:follow_index'))
+
+        self.assertIn(post, response.context['page_obj'].object_list)

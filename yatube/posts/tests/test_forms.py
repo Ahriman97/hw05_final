@@ -1,7 +1,9 @@
-from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
 from django.urls import reverse
+
+from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
+
 from posts.forms import PostForm
 from posts.models import Group, Post
 
@@ -67,6 +69,7 @@ class TestCreateForm(TestCase):
         new_post = Post.objects.first()
         self.assertEqual(new_post.group, self.group)
         self.assertEqual(new_post.author, self.user)
+        self.assertEqual(new_post.image, 'posts/small.gif')
         self.assertRedirects(
             response,
             reverse('posts:profile', args=['TestForTest']))

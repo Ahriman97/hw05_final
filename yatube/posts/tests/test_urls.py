@@ -1,9 +1,11 @@
-from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
-from posts.models import Post, Group
 from django.urls import reverse
 from http import HTTPStatus
 from urllib.parse import urljoin
+
+from django.contrib.auth import get_user_model
+
+from posts.models import Post, Group
 
 User = get_user_model()
 
