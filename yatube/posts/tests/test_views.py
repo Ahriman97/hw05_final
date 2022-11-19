@@ -161,8 +161,7 @@ class PostPagesTests(TestCase):
             author=User.objects.get(username='Igor'))
         response = self.authorized_client.get(reverse('posts:index'))
         after_add_post_in_cache = response.content
-        self.assertEqual(before_clearing_the_cache,
-                            after_add_post_in_cache)
+        self.assertEqual(before_clearing_the_cache, after_add_post_in_cache)
 
     def test_create_comment_by_authorized_client(self):
         cache.clear()
