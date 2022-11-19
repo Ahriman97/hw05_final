@@ -1,11 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Post, Group, User, Follow
+from django.urls import reverse
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
-from .forms import PostForm, CommentForm
 from django.views.decorators.csrf import csrf_exempt
-from django.urls import reverse
-# Число отображаемых постов на странице
+
+from .models import Post, Group, User, Follow
+from .forms import PostForm, CommentForm
 
 SHOW_SOME_POSTS = 10
 
@@ -18,7 +18,6 @@ def paginator(request, info):
 
 def index(request):
     template = 'posts/index.html'
-    # post_list = Post.objects.all()
     post_list = Post.objects.select_related('author').all()
     page_obj = paginator(request, post_list)
     context = {
@@ -135,7 +134,7 @@ def follow_index(request):
     list_of_posts = Post.objects.filter(author__following__user=request.user)
     page_obj = paginator(request, list_of_posts)
     index = True
-    profile = True
+    profile = False
     context = {
         'page_obj': page_obj,
         'index': index,

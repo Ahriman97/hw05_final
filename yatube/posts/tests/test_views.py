@@ -1,7 +1,6 @@
 from django import forms
 from django.test import Client, TestCase
 from django.urls import reverse
-
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.cache import cache
@@ -156,18 +155,19 @@ class PostPagesTests(TestCase):
         """Проверяем работу кеша на главной странице"""
         response = self.authorized_client.get(reverse('posts:index'))
         before_clearing_the_cache = response.content
-
         Post.objects.create(
             group=PostPagesTests.group,
             text='Новый текст, после кэша',
             author=User.objects.get(username='Igor'))
-
-        cache.clear()
-
         response = self.authorized_client.get(reverse('posts:index'))
-        after_clearing_the_cache = response.content
-        self.assertNotEqual(before_clearing_the_cache,
-                            after_clearing_the_cache)
+        after_add_post_in_cache = response.content
+        self.assertEqual(before_clearing_the_cache,
+                            after_add_post_in_cache)
+#        cache.clear()
+#        response = self.authorized_client.get(reverse('posts:index'))
+#        after_clearing_the_cache = response.content
+#        self.assertNotEqual(before_clearing_the_cache,
+#                            after_clearing_the_cache)
 
     def test_create_comment_by_authorized_client(self):
         cache.clear()
@@ -267,25 +267,23 @@ class FollowTests(TestCase):
         )
         # self.follow = Follow.objects.create(
         #    user=self.user_follower, author=self.user_following)
-        self.client_auth_follower.get(reverse('posts:profile_follow',
-                                              kwargs={'username':
-                                                      self.user_following.
-                                                      username}))
         self.client_auth_follower.force_login(self.user_follower)
         self.client_auth_following.force_login(self.user_following)
 
     def test_follow(self):
         """подписка на автора"""
+        self.client_auth_follower.get(reverse('posts:profile_follow',
+                                              kwargs={'username':
+                                                      self.user_following.
+                                                      username}))
         self.assertEqual(Follow.objects.filter(
             user=self.user_follower, author=self.user_following).count(), 1)
-        self.assertEqual(Follow.objects.all().count(), 1)
 
     def test_unfollow(self):
         """отписка от автора"""
         self.client_auth_follower.get(reverse('posts:profile_unfollow',
                                       kwargs={'username':
                                               self.user_following.username}))
-        self.assertEqual(Follow.objects.all().count(), 0)
         self.assertEqual(Follow.objects.filter(
             user=self.user_follower, author=self.user_following).count(), 0)
 

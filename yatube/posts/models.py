@@ -1,8 +1,8 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.db.models import UniqueConstraint
 # Нужно установить библиотеку pytils:
 # pip3 install pytils from pytils.translit import slugify
-from django.db.models import UniqueConstraint
 
 User = get_user_model()
 
@@ -106,4 +106,6 @@ class Follow(models.Model):
                              related_name="follower")
     author = models.ForeignKey(User, on_delete=models.CASCADE,
                                related_name="following")
-    UniqueConstraint(fields=['user', 'author'], name='unique_booking')
+
+    class Meta:
+        UniqueConstraint(fields=['user', 'author'], name='unique_booking')
