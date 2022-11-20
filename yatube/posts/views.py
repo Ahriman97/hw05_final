@@ -20,8 +20,12 @@ def index(request):
     template = 'posts/index.html'
     post_list = Post.objects.select_related('author').all()
     page_obj = paginator(request, post_list)
+    profile = True
+    index = False
     context = {
         'page_obj': page_obj,
+        'profile': profile,
+        'index': index
     }
     return render(request, template, context)
 

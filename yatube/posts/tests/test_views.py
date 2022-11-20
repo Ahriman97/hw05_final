@@ -162,6 +162,10 @@ class PostPagesTests(TestCase):
         response = self.authorized_client.get(reverse('posts:index'))
         after_add_post_in_cache = response.content
         self.assertEqual(before_clearing_the_cache, after_add_post_in_cache)
+        cache.clear() 
+        response = self.authorized_client.get(reverse('posts:index')) 
+        after_clearing_the_cache = response.content 
+        self.assertNotEqual(after_add_post_in_cache, after_clearing_the_cache)
 
     def test_create_comment_by_authorized_client(self):
         cache.clear()
@@ -259,8 +263,6 @@ class FollowTests(TestCase):
             author=self.user_follower,
             text='Тестовая запись для тестирования ленты'
         )
-        # self.follow = Follow.objects.create(
-        #    user=self.user_follower, author=self.user_following)
         self.client_auth_follower.force_login(self.user_follower)
         self.client_auth_following.force_login(self.user_following)
 
