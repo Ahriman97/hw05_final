@@ -26,9 +26,12 @@ SECRET_KEY = '29xms4pt8&p)$*pgikphh&j)tjrs=iu0^(665s2d)drm4!iyc^'
 DEBUG = False
 # Изменение на DEBUG = False добавляет '*' в ALLOWED_HOSTS
 ALLOWED_HOSTS = [
+    #'158.160.27.20',
+    #'127.0.0.1',
+    #'localhost',
     '158.160.27.20',
-    '127.0.0.1',
-    'localhost'
+    'localhost',
+    'startedyatube.ddns.net'
 ]
 
 # Для подключения бэкенда кеширования
