@@ -22,14 +22,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '29xms4pt8&p)$*pgikphh&j)tjrs=iu0^(665s2d)drm4!iyc^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-# DEBUG = False
+#DEBUG = True
+DEBUG = False
 # Изменение на DEBUG = False добавляет '*' в ALLOWED_HOSTS
 ALLOWED_HOSTS = [
-    'localhost',
+    '158.160.27.20',
     '127.0.0.1',
-    '[::1]',
-    'testserver',
+    'localhost'
 ]
 
 # Для подключения бэкенда кеширования
@@ -147,7 +146,8 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
-STATIC_URL = '/static/' # префикс для url
+
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/') # папка, в которой будет лежать статика 
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
