@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 import os
 from dotenv import load_dotenv
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 load_dotenv()
 
@@ -174,3 +176,10 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT')
     }
 }
+
+# скопируйте dsn из вашего личного кабинета на Sentry: 
+# Projects → <имя-проекта> → Client Keys
+sentry_sdk.init(
+    dsn="https://4d2e106698a94c68b9214824ecad755e@o4505070771372032.ingest.sentry.io/4505070775173120", 
+    integrations=[DjangoIntegration()],
+) 
