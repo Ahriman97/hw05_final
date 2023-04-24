@@ -32,7 +32,7 @@ ALLOWED_HOSTS = [
     #'158.160.27.20',
     #'127.0.0.1',
     #'localhost',
-    '158.160.27.20',
+    '51.250.105.202',
     'localhost',
     'startedyatube.ddns.net'
 ]
