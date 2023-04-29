@@ -16,10 +16,11 @@
        {% comment %}
       Меню - список пунктов со стандартными классами Bootsrap.
       Класс nav-pills нужен для выделения активных пунктов 
+      # href='http://127.0.0.1:8000/'
       {% endcomment %}
       <ul class="nav nav-pills">
         <li class="nav-item">
-          <a class="nav-link" href='http://127.0.0.1:8000/'>Главная</a>
+          <a class="nav-link" href="{% url 'posts:index' %}">Главная</a>
         </li>
         <li class="nav-item"> 
           <a class="nav-link"
@@ -38,7 +39,7 @@
         {% if user.username %}
         {% with request.resolver_match.view_name as view_name %}
         <li class="nav-item">
-          <a class="nav-link" href='http://127.0.0.1:8000/create/'>Новая запись</a>
+          <a class="nav-link" href="{% url 'posts:create_post' %}">Новая запись</a>
         </li>
         {% comment %}
         <li class="nav-item">
@@ -46,7 +47,7 @@
         </li>
         {% endcomment %}
         <li class="nav-item"> 
-          <a class="nav-link link-light" href='http://127.0.0.1:8000/auth/logout'>Выйти</a>
+          <a class="nav-link link-light" href="{% url 'users:logout' %}">Выйти</a>
         </li>
         <li>
           <a class="nav-link">Пользователь: {{ user.username }}</a>
@@ -54,10 +55,10 @@
         {% endwith %}
         {% else %}
         <li class="nav-item"> 
-          <a class="nav-link link-light" href='http://127.0.0.1:8000/auth/login/'>Войти</a>
+          <a class="nav-link link-light" href="{% url 'users:login' %}">Войти</a>
         </li>
         <li class="nav-item"> 
-          <a class="nav-link link-light" href='http://127.0.0.1:8000/auth/signup/'>Регистрация</a>
+          <a class="nav-link link-light" href="{% url 'users:signup' %}">Регистрация</a>
         </li>
         {% endif %}
       </ul>
@@ -65,4 +66,3 @@
     </div>
   </nav>
 </header>
-
